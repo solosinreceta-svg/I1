@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTERNOS HPJRM</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #0d47a1;
+            --secondary: #34a853;
+            --danger: #ea4335;
+            --warning: #fbbc04;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --border: #dadce0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* Header y Navegación */
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .app-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Menú Hamburguesa */
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: -300px;
+            width: 280px;
+            height: calc(100vh - 60px);
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            transition: left 0.3s ease;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .menu-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .menu-item:hover {
+            background: var(--light);
+        }
+
+        .menu-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Contenido Principal */
+        .main-content {
+            margin-top: 60px;
+            padding: 1rem;
+            min-height: calc(100vh - 60px);
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tarjetas y Layout */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+
+        .grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        /* Botones */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: var(--dark);
+        }
+
+        /* Formularios */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Tablas */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .table tr:hover {
+            background: var(--light);
+        }
+
+        /* Calificaciones con colores */
+        .grade-2 { background: #ffebee; color: var(--danger); font-weight: bold; }
+        .grade-3 { background: #fff8e1; color: var(--warning); font-weight: bold; }
+        .grade-4 { background: #e8f5e8; color: #2e7d32; font-weight: bold; }
+        .grade-5 { background: #e3f2fd; color: var(--primary); font-weight: bold; }
+        .grade-5plus { background: #e8eaf6; color: #303f9f; font-weight: bold; }
+
+        /* Strikes */
+        .strike-positive { color: var(--secondary); font-weight: bold; }
+        .strike-negative { color: var(--danger); font-weight: bold; }
+
+        /* Calendario */
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .calendar-header {
+            grid-column: 1 / -1;
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 0.75rem;
+            min-height: 80px;
+            border: 1px solid var(--border);
+        }
+
+        .calendar-day.header {
+            background: var(--light);
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .guardia-team {
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                left: -100%;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Utilidades */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .d-flex { display: flex; }
+        .justify-between { justify-content: space-between; }
+        .align-center { align-items: center; }
+        .gap-1 { gap: 0.5rem; }
+
+        /* Estados de carga */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Notificaciones */
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: var(--secondary);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--danger);
+        }
+
+        .notification.warning {
+            background: var(--warning);
+            color: var(--dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <h1 class="app-title">INTERNOS HPJRM</h1>
+            <div></div> <!-- Espacio para balance -->
+        </nav>
+    </header>
+
+    <!-- Sidebar Menu -->
+    <aside class="sidebar" id="sidebar">
+        <div class="menu-item active" onclick="showSection('dashboard')">
+            📊 Dashboard
+        </div>
+        <div class="menu-item" onclick="showSection('rotaciones')">
+            🔄 Rotaciones
+        </div>
+        <div class="menu-item" onclick="showSection('estudiantes')">
+            👥 Gestión Estudiantes
+        </div>
+        <div class="menu-item" onclick="showSection('seminarios')">
+            📚 Seminarios
+        </div>
+        <div class="menu-item" onclick="showSection('strikes')">
+            ⚖️ Sistema de Strikes
+        </div>
+        <div class="menu-item" onclick="showSection('guardias')">
+            🗓️ Calendario Guardias
+        </div>
+        <div class="menu-item" onclick="showSection('evaluacion')">
+            📈 Evaluación Integral
+        </div>
+        <div class="menu-item" onclick="showSection('configuracion')">
+            ⚙️ Configuración
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard -->
+        <section id="dashboard" class="section active">
+            <div class="card">
+                <h2>Dashboard Principal</h2>
+                <div class="grid mt-2">
+                    <div class="card">
+                        <h3>🏆 Mejores Promedios</h3>
+                        <div id="mejores-estudiantes"></div>
+                    </div>
+                    <div class="card">
+                        <h3>⚠️ Necesitan Mejorar</h3>
+                        <div id="peores-estudiantes"></div>
+                    </div>
+                    <div class="card">
+                        <h3>📈 Métricas Generales</h3>
+                        <div id="metricas-generales"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rotaciones -->
+        <section id="rotaciones" class="section">
+            <div class="card">
+                <h2>Sistema de Rotaciones</h2>
+                <div id="timeline-rotaciones" class="mt-2"></div>
+            </div>
+        </section>
+
+        <!-- Gestión Estudiantes -->
+        <section id="estudiantes" class="section">
+            <div class="card">
+                <div class="d-flex justify-between align-center">
+                    <h2>Gestión de Estudiantes</h2>
+                    <button class="btn btn-primary" onclick="showStudentForm()">
+                        ➕ Añadir Estudiante
+                    </button>
+                </div>
+                
+                <!-- Formulario Estudiantes -->
+                <div id="student-form" class="mt-2" style="display: none;">
+                    <div class="card">
+                        <h3 id="form-title">Añadir Nuevo Estudiante</h3>
+                        <form id="studentForm" onsubmit="saveStudent(event)">
+                            <div class="form-group">
+                                <label class="form-label">Nombre Completo</label>
+                                <input type="text" class="form-control" id="studentName" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="studentPhone" required>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <button type="submit" class="btn btn-primary">Guardar</button>
+                                <button type="button" class="btn btn-danger" onclick="hideStudentForm()">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Lista Estudiantes -->
+                <div class="table-container mt-2">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Teléfono</th>
+                                <th>Promedio</th>
+                                <th>Strikes</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seminarios -->
+        <section id="seminarios" class="section">
+            <div class="card">
+                <h2>Evaluación de Seminarios</h2>
+                <div class="table-container mt-2">
+                    <table class="table" id="seminarios-table">
+                        <thead>
+                            <tr>
+                                <th>Estudiante</th>
+                                <th>Neumología</th>
+                                <th>Cardiología</th>
+                                <th>Neurología</th>
+                                <th>Nefrología</th>
+                                <th>Endocrinología</th>
+                                <th>Hematología</th>
+                                <th>Neonatología</th>
+                                <th>Infectoso</th>
+                                <th>Digestivo</th>
+                                <th>Promedio</th>
+                            </tr>
+                        </thead>
+                        <tbody id="seminarios-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sistema de Strikes -->
+        <section id="strikes" class="section">
+            <div class="card">
+                <div class="d-flex justify-between align-center">
+                    <h2>Sistema de Strikes</h2>
+                    <button class="btn btn-primary" onclick="showStrikeForm()">
+                        ➕ Registrar Strike
+                    </button>
+                </div>
+
+                <!-- Formulario Strike -->
+                <div id="strike-form" class="mt-2" style="display: none;">
+                    <div class="card">
+                        <h3>Registrar Strike</h3>
+                        <form id="strikeForm" onsubmit="saveStrike(event)">
+                            <div class="form-group">
+                                <label class="form-label">Estudiante</label>
+                                <select class="form-control" id="strikeStudent" required>
+                                    <option value="">Seleccionar estudiante...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tipo de Strike</label>
+                                <select class="form-control" id="strikeType" required>
+                                    <option value="">Seleccionar tipo...</option>
+                                    <option value="positive">✅ Strike Positivo</option>
+                                    <option value="negative">❌ Strike Negativo</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Valor</label>
+                                <select class="form-control" id="strikeValue" required>
+                                    <option value="">Seleccionar valor...</option>
+                                    <option value="0.1">0.1 puntos (Leve)</option>
+                                    <option value="0.2">0.2 puntos (Moderado)</option>
+                                    <option value="0.3">0.3 puntos (Moderado-Alto)</option>
+                                    <option value="0.4">0.4 puntos (Grave)</option>
+                                    <option value="0.5">0.5 puntos (Muy Grave)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Descripción</label>
+                                <textarea class="form-control" id="strikeDescription" rows="3" required></textarea>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <button type="submit" class="btn btn-primary">Guardar Strike</button>
+                                <button type="button" class="btn btn-danger" onclick="hideStrikeForm()">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Lista Strikes -->
+                <div class="table-container mt-2">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Estudiante</th>
+                                <th>Tipo</th>
+                                <th>Valor</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="strikes-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Calendario Guardias -->
+        <section id="guardias" class="section">
+            <div class="card">
+                <div class="d-flex justify-between align-center">
+                    <h2>Calendario de Guardias</h2>
+                    <button class="btn btn-primary" onclick="manageTeams()">
+                        👥 Gestionar Equipos
+                    </button>
+                </div>
+                <div id="calendar-container" class="mt-2"></div>
+            </div>
+        </section>
+
+        <!-- Evaluación Integral -->
+        <section id="evaluacion" class="section">
+            <div class="card">
+                <h2>Evaluación Integral</h2>
+                <div class="table-container mt-2">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Estudiante</th>
+                                <th>Seminarios (70%)</th>
+                                <th>Guardias (20%)</th>
+                                <th>Strikes Netos</th>
+                                <th>Promedio Final</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="evaluacion-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Configuración -->
+        <section id="configuracion" class="section">
+            <div class="card">
+                <h2>Configuración del Sistema</h2>
+                <div class="grid mt-2">
+                    <div class="card">
+                        <h3>📅 Fechas Académicas</h3>
+                        <form onsubmit="updateDates(event)">
+                            <div class="form-group">
+                                <label class="form-label">Inicio Rotación</label>
+                                <input type="date" class="form-control" id="startDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Duración (semanas)</label>
+                                <input type="number" class="form-control" id="duration" min="1" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Actualizar Fechas</button>
+                        </form>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>💾 Gestión de Datos</h3>
+                        <div class="d-flex gap-1 mb-2">
+                            <button class="btn btn-success" onclick="exportData()">
+                                📤 Exportar Datos
+                            </button>
+                            <button class="btn btn-warning" onclick="importData()">
+                                📥 Importar Datos
+                            </button>
+                        </div>
+                        <button class="btn btn-danger" onclick="clearData()">
+                            🗑️ Limpiar Todos los Datos
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Notificación -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Input oculto para importar datos -->
+    <input type="file" id="importFile" accept=".json" style="display: none;">
+
+    <script>
+        // ===== CONSTANTES Y CONFIGURACIÓN =====
+        const SEMINARIOS = [
+            'NEUMOLOGÍA', 'CARDIOLOGÍA', 'NEUROLOGÍA', 'NEFROLOGÍA',
+            'ENDOCRINOLOGÍA', 'HEMATOLOGÍA', 'NEONATOLOGÍA', 'INFECCIOSO', 'DIGESTIVO'
+        ];
+
+        const ROTACIONES_CONFIG = {
+            MISCELANEA: { nombre: 'Miscelánea Pediátrica', porcentaje: 0.4, color: '#4CAF50' },
+            RESPIRATORIO: { nombre: 'Respiratorio Pediátrico', porcentaje: 0.4, color: '#2196F3' },
+            GASTROENTEROLOGIA: { nombre: 'Gastroenterología Pediátrica', porcentaje: 0.2, color: '#FF9800' }
+        };
+
+        // ===== ESTADO GLOBAL =====
+        let state = {
+            estudiantes: [],
+            seminarios: {},
+            strikes: [],
+            equiposGuardia: [],
+            calendarioGuardias: {},
+            config: {
+                inicioRotacion: '2025-11-10',
+                duracionSemanas: 10,
+                vacaciones: ['2025-12-22', '2025-12-23', '2025-12-24', '2025-12-25', '2025-12-26', '2025-12-27', '2025-12-28']
+            }
+        };
+
+        // ===== INICIALIZACIÓN =====
+        function init() {
+            loadData();
+            initializeDefaultData();
+            renderDashboard();
+            setupEventListeners();
+        }
+
+        function initializeDefaultData() {
+            if (state.estudiantes.length === 0) {
+                state.estudiantes = [
+                    { id: 1, nombre: 'Amalia del Busto Rodríguez', telefono: '51752468' },
+                    { id: 2, nombre: 'Daisel Cardoza Llorens', telefono: '52078480' },
+                    { id: 3, nombre: 'Juan José Calero de la Torre', telefono: '55491487' },
+                    { id: 4, nombre: 'Drialis Mendoza Fonseca', telefono: '54281354' },
+                    { id: 5, nombre: 'Jareimys Meneses Sauchay', telefono: '51190349' },
+                    { id: 6, nombre: 'Daimaris Orta Leyva', telefono: '54438672' },
+                    { id: 7, nombre: 'Bárbara Yeney Silvera Pérez', telefono: '55713088' }
+                ];
+            }
+
+            if (state.equiposGuardia.length === 0) {
+                state.equiposGuardia = [
+                    { id: 1, nombre: 'Equipo A', estudiantes: [1, 2] },
+                    { id: 2, nombre: 'Equipo B', estudiantes: [3, 4] },
+                    { id: 3, nombre: 'Equipo C', estudiantes: [5, 6, 7] }
+                ];
+            }
+
+            initializeSeminarios();
+            initializeCalendarioGuardias();
+            saveData();
+        }
+
+        function initializeSeminarios() {
+            state.estudiantes.forEach(estudiante => {
+                if (!state.seminarios[estudiante.id]) {
+                    state.seminarios[estudiante.id] = {};
+                    SEMINARIOS.forEach(seminario => {
+                        state.seminarios[estudiante.id][seminario] = null;
+                    });
+                }
+            });
+        }
+
+        function initializeCalendarioGuardias() {
+            const startDate = new Date(state.config.inicioRotacion);
+            let currentDate = new Date(startDate);
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + (state.config.duracionSemanas * 7));
+
+            let equipoIndex = 0;
+
+            while (currentDate <= endDate) {
+                const dateStr = currentDate.toISOString().split('T')[0];
+                
+                // Saltar vacaciones
+                if (!state.config.vacaciones.includes(dateStr)) {
+                    const equipo = state.equiposGuardia[equipoIndex];
+                    if (equipo) {
+                        state.calendarioGuardias[dateStr] = {
+                            equipoId: equipo.id,
+                            presente: {}
+                        };
+                    }
+                    
+                    equipoIndex = (equipoIndex + 1) % state.equiposGuardia.length;
+                }
+
+                currentDate.setDate(currentDate.getDate() + 6);
+            }
+        }
+
+        // ===== PERSISTENCIA DE DATOS =====
+        function loadData() {
+            const saved = localStorage.getItem('internosApp');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                state = { ...state, ...parsed };
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('internosApp', JSON.stringify(state));
+        }
+
+        // ===== RENDERIZADO DE INTERFAZ =====
+        function renderDashboard() {
+            const mejores = document.getElementById('mejores-estudiantes');
+            const peores = document.getElementById('peores-estudiantes');
+            const metricas = document.getElementById('metricas-generales');
+
+            const promedios = state.estudiantes.map(est => ({
+                ...est,
+                promedio: calcularPromedioFinal(est.id)
+            })).sort((a, b) => b.promedio - a.promedio);
+
+            // Mejores estudiantes
+            mejores.innerHTML = promedios.slice(0, 3).map(est => `
+                <div class="d-flex justify-between align-center mb-1">
+                    <span>${est.nombre}</span>
+                    <strong>${est.promedio.toFixed(1)}</strong>
+                </div>
+            `).join('');
+
+            // Peores estudiantes
+            peores.innerHTML = promedios.slice(-3).reverse().map(est => `
+                <div class="d-flex justify-between align-center mb-1">
+                    <span>${est.nombre}</span>
+                    <strong class="${est.promedio < 3 ? 'strike-negative' : ''}">${est.promedio.toFixed(1)}</strong>
+                </div>
+            `).join('');
+
+            // Métricas generales
+            const totalStrikes = state.strikes.length;
+            const strikesPositivos = state.strikes.filter(s => s.tipo === 'positive').length;
+            const promedioGeneral = promedios.reduce((sum, est) => sum + est.promedio, 0) / promedios.length;
+
+            metricas.innerHTML = `
+                <div>📊 Promedio General: <strong>${promedioGeneral.toFixed(1)}</strong></div>
+                <div>✅ Strikes Positivos: <strong>${strikesPositivos}</strong></div>
+                <div>❌ Strikes Negativos: <strong>${totalStrikes - strikesPositivos}</strong></div>
+                <div>👥 Total Estudiantes: <strong>${state.estudiantes.length}</strong></div>
+            `;
+        }
+
+        function renderEstudiantes() {
+            const tbody = document.getElementById('students-list');
+            tbody.innerHTML = state.estudiantes.map(estudiante => {
+                const promedio = calcularPromedioFinal(estudiante.id);
+                const strikes = calcularStrikesNetos(estudiante.id);
+                
+                return `
+                    <tr>
+                        <td>
+                            <a href="#" onclick="notificarEstudiante(${estudiante.id}); return false;">
+                                ${estudiante.nombre}
+                            </a>
+                        </td>
+                        <td>+53 ${estudiante.telefono}</td>
+                        <td class="grade-${Math.floor(promedio)}">${promedio.toFixed(1)}</td>
+                        <td class="${strikes >= 0 ? 'strike-positive' : 'strike-negative'}">
+                            ${strikes > 0 ? '+' : ''}${strikes.toFixed(1)}
+                        </td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editStudent(${estudiante.id})">
+                                ✏️
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteStudent(${estudiante.id})">
+                                🗑️
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderSeminarios() {
+            const tbody = document.getElementById('seminarios-body');
+            tbody.innerHTML = state.estudiantes.map(estudiante => {
+                const seminariosEst = state.seminarios[estudiante.id] || {};
+                const celdas = SEMINARIOS.map(seminario => {
+                    const nota = seminariosEst[seminario];
+                    return `<td>
+                        <select class="form-control grade-${nota || 'null'}" 
+                                onchange="updateSeminarioGrade(${estudiante.id}, '${seminario}', this.value)">
+                            <option value="">-</option>
+                            <option value="2" ${nota === 2 ? 'selected' : ''}>2</option>
+                            <option value="3" ${nota === 3 ? 'selected' : ''}>3</option>
+                            <option value="4" ${nota === 4 ? 'selected' : ''}>4</option>
+                            <option value="5" ${nota === 5 ? 'selected' : ''}>5</option>
+                            <option value="5+" ${nota === '5+' ? 'selected' : ''}>5+</option>
+                        </select>
+                    </td>`;
+                }).join('');
+
+                const promedio = calcularPromedioSeminarios(estudiante.id);
+                
+                return `
+                    <tr>
+                        <td>
+                            <a href="#" onclick="notificarEstudiante(${estudiante.id}); return false;">
+                                ${estudiante.nombre}
+                            </a>
+                        </td>
+                        ${celdas}
+                        <td class="grade-${Math.floor(promedio)}"><strong>${promedio.toFixed(1)}</strong></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderStrikes() {
+            const tbody = document.getElementById('strikes-list');
+            const select = document.getElementById('strikeStudent');
+            
+            // Actualizar select de estudiantes
+            select.innerHTML = '<option value="">Seleccionar estudiante...</option>' +
+                state.estudiantes.map(est => 
+                    `<option value="${est.id}">${est.nombre}</option>`
+                ).join('');
+
+            // Renderizar lista de strikes
+            tbody.innerHTML = state.strikes.map((strike, index) => {
+                const estudiante = state.estudiantes.find(e => e.id === strike.estudianteId);
+                return `
+                    <tr>
+                        <td>${new Date(strike.fecha).toLocaleDateString()}</td>
+                        <td>${estudiante?.nombre || 'N/A'}</td>
+                        <td class="${strike.tipo === 'positive' ? 'strike-positive' : 'strike-negative'}">
+                            ${strike.tipo === 'positive' ? '✅ Positivo' : '❌ Negativo'}
+                        </td>
+                        <td class="${strike.tipo === 'positive' ? 'strike-positive' : 'strike-negative'}">
+                            ${strike.tipo === 'positive' ? '+' : ''}${strike.valor}
+                        </td>
+                        <td>${strike.descripcion}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deleteStrike(${index})">
+                                🗑️
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderCalendarioGuardias() {
+            const container = document.getElementById('calendar-container');
+            const today = new Date();
+            const month = today.getMonth();
+            const year = today.getFullYear();
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(firstDay.getDate() - firstDay.getDay());
+
+            let html = `<div class="calendar">`;
+            html += `<div class="calendar-header">${today.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}</div>`;
+            
+            // Días de la semana
+            ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].forEach(dia => {
+                html += `<div class="calendar-day header">${dia}</div>`;
+            });
+
+            let currentDate = new Date(startDate);
+            for (let i = 0; i < 42; i++) {
+                const dateStr = currentDate.toISOString().split('T')[0];
+                const guardia = state.calendarioGuardias[dateStr];
+                const isToday = dateStr === today.toISOString().split('T')[0];
+                const isCurrentMonth = currentDate.getMonth() === month;
+                
+                html += `<div class="calendar-day ${!isCurrentMonth ? 'text-muted' : ''} ${isToday ? 'bg-warning' : ''}">`;
+                html += `<div>${currentDate.getDate()}</div>`;
+                
+                if (guardia) {
+                    const equipo = state.equiposGuardia.find(e => e.id === guardia.equipoId);
+                    html += `<div class="guardia-team">${equipo?.nombre || 'Equipo'}</div>`;
+                    
+                    // Botones de asistencia
+                    equipo?.estudiantes.forEach(estId => {
+                        const est = state.estudiantes.find(e => e.id === estId);
+                        const presente = guardia.presente[estId];
+                        html += `
+                            <div class="d-flex justify-between align-center mt-1">
+                                <small>${est?.nombre.split(' ')[0]}</small>
+                                <button class="btn btn-sm ${presente ? 'btn-success' : 'btn-danger'}" 
+                                        onclick="toggleAsistencia('${dateStr}', ${estId})">
+                                    ${presente ? '✅' : '❌'}
+                                </button>
+                            </div>
+                        `;
+                    });
+                }
+                
+                html += `</div>`;
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function renderEvaluacionIntegral() {
+            const tbody = document.getElementById('evaluacion-body');
+            tbody.innerHTML = state.estudiantes.map(estudiante => {
+                const promedioSeminarios = calcularPromedioSeminarios(estudiante.id);
+                const promedioGuardias = calcularPromedioGuardias(estudiante.id);
+                const strikesNetos = calcularStrikesNetos(estudiante.id);
+                const promedioFinal = calcularPromedioFinal(estudiante.id);
+                
+                let estado = '✅ Satisfactorio';
+                let estadoClass = 'strike-positive';
+                if (promedioFinal < 3) {
+                    estado = '❌ Insuficiente';
+                    estadoClass = 'strike-negative';
+                } else if (promedioFinal < 4) {
+                    estado = '⚠️ Mejorable';
+                    estadoClass = 'strike-warning';
+                }
+
+                return `
+                    <tr>
+                        <td>${estudiante.nombre}</td>
+                        <td class="grade-${Math.floor(promedioSeminarios)}">${promedioSeminarios.toFixed(1)}</td>
+                        <td>${promedioGuardias.toFixed(1)}</td>
+                        <td class="${strikesNetos >= 0 ? 'strike-positive' : 'strike-negative'}">
+                            ${strikesNetos > 0 ? '+' : ''}${strikesNetos.toFixed(1)}
+                        </td>
+                        <td class="grade-${Math.floor(promedioFinal)}"><strong>${promedioFinal.toFixed(1)}</strong></td>
+                        <td class="${estadoClass}">${estado}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" 
+                                    onclick="notificarEvaluacion(${estudiante.id})">
+                                📱 Notificar
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderRotaciones() {
+            const container = document.getElementById('timeline-rotaciones');
+            const semanasTotales = state.config.duracionSemanas;
+            const semanaActual = calcularSemanaActual();
+            
+            let html = `<div class="card">
+                <h3>Timeline de Rotaciones - Semana ${semanaActual}/${semanasTotales}</h3>
+                <div class="table-container mt-2">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Estudiante</th>
+                                <th>Rotación Actual</th>
+                                <th>Progreso</th>
+                                <th>Próxima Rotación</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+            state.estudiantes.forEach(estudiante => {
+                const rotacionActual = calcularRotacionActual(estudiante.id, semanaActual);
+                const progreso = calcularProgresoRotacion(semanaActual);
+                const proximaRotacion = calcularProximaRotacion(rotacionActual);
+                
+                html += `
+                    <tr>
+                        <td>${estudiante.nombre}</td>
+                        <td><span style="color: ${rotacionActual.color}">●</span> ${rotacionActual.nombre}</td>
+                        <td>
+                            <div style="background: #f0f0f0; border-radius: 10px; height: 20px;">
+                                <div style="background: ${rotacionActual.color}; width: ${progreso}%; height: 100%; border-radius: 10px;"></div>
+                            </div>
+                            <small>${progreso}% completado</small>
+                        </td>
+                        <td><span style="color: ${proximaRotacion.color}">●</span> ${proximaRotacion.nombre}</td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody></table></div></div>`;
+            container.innerHTML = html;
+        }
+
+        // ===== CÁLCULOS =====
+        function calcularPromedioSeminarios(estudianteId) {
+            const seminariosEst = state.seminarios[estudianteId];
+            if (!seminariosEst) return 0;
+
+            const notas = Object.values(seminariosEst).filter(nota => nota !== null)
+                .map(nota => nota === '5+' ? 5.5 : parseFloat(nota));
+            
+            return notas.length > 0 ? notas.reduce((a, b) => a + b, 0) / notas.length : 0;
+        }
+
+        function calcularPromedioGuardias(estudianteId) {
+            let total = 0;
+            let count = 0;
+
+            Object.values(state.calendarioGuardias).forEach(guardia => {
+                const equipo = state.equiposGuardia.find(e => e.id === guardia.equipoId);
+                if (equipo?.estudiantes.includes(estudianteId)) {
+                    const presente = guardia.presente[estudianteId];
+                    total += presente ? 5 : 0; // 5 puntos por guardia presente
+                    count++;
+                }
+            });
+
+            return count > 0 ? total / count : 0;
+        }
+
+        function calcularStrikesNetos(estudianteId) {
+            const strikesEst = state.strikes.filter(s => s.estudianteId === estudianteId);
+            return strikesEst.reduce((total, strike) => {
+                return strike.tipo === 'positive' ? total + parseFloat(strike.valor) : total - parseFloat(strike.valor);
+            }, 0);
+        }
+
+        function calcularPromedioFinal(estudianteId) {
+            const seminarios = calcularPromedioSeminarios(estudianteId);
+            const guardias = calcularPromedioGuardias(estudianteId);
+            const strikesNetos = calcularStrikesNetos(estudianteId);
+            
+            // Aplicar pesos: 70% seminarios, 20% guardias, 10% ajuste por strikes
+            let promedio = (seminarios * 0.7) + (guardias * 0.2);
+            
+            // Aplicar strikes (máximo ±10% del promedio)
+            const ajusteStrikes = strikesNetos * 0.1;
+            promedio = Math.max(0, Math.min(5.5, promedio + ajusteStrikes));
+            
+            return promedio;
+        }
+
+        function calcularSemanaActual() {
+            const inicio = new Date(state.config.inicioRotacion);
+            const hoy = new Date();
+            const diffTime = hoy - inicio;
+            const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
+            return Math.min(Math.max(1, diffWeeks + 1), state.config.duracionSemanas);
+        }
+
+        function calcularRotacionActual(estudianteId, semanaActual) {
+            // Distribución simple basada en ID del estudiante y semana actual
+            const rotaciones = Object.values(ROTACIONES_CONFIG);
+            const index = (estudianteId + semanaActual - 1) % rotaciones.length;
+            return rotaciones[index];
+        }
+
+        function calcularProgresoRotacion(semanaActual) {
+            return (semanaActual % 3) * 33.33; // Simulación de progreso
+        }
+
+        function calcularProximaRotacion(rotacionActual) {
+            const rotaciones = Object.values(ROTACIONES_CONFIG);
+            const currentIndex = rotaciones.findIndex(r => r.nombre === rotacionActual.nombre);
+            return rotaciones[(currentIndex + 1) % rotaciones.length];
+        }
+
+        // ===== GESTIÓN DE ESTUDIANTES =====
+        function showStudentForm(estudiante = null) {
+            const form = document.getElementById('student-form');
+            const title = document.getElementById('form-title');
+            const formElement = document.getElementById('studentForm');
+            
+            if (estudiante) {
+                title.textContent = 'Editar Estudiante';
+                document.getElementById('studentName').value = estudiante.nombre;
+                document.getElementById('studentPhone').value = estudiante.telefono;
+                formElement.dataset.editingId = estudiante.id;
+            } else {
+                title.textContent = 'Añadir Nuevo Estudiante';
+                formElement.reset();
+                delete formElement.dataset.editingId;
+            }
+            
+            form.style.display = 'block';
+        }
+
+        function hideStudentForm() {
+            document.getElementById('student-form').style.display = 'none';
+        }
+
+        function saveStudent(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const nombre = document.getElementById('studentName').value.trim();
+            const telefono = document.getElementById('studentPhone').value.trim();
+            const editingId = form.dataset.editingId;
+
+            if (!nombre || !telefono) {
+                showNotification('Por favor complete todos los campos', 'error');
+                return;
+            }
+
+            if (editingId) {
+                // Editar estudiante existente
+                const index = state.estudiantes.findIndex(e => e.id == editingId);
+                if (index !== -1) {
+                    state.estudiantes[index] = {
+                        ...state.estudiantes[index],
+                        nombre,
+                        telefono
+                    };
+                }
+            } else {
+                // Nuevo estudiante
+                const newId = state.estudiantes.length > 0 ? 
+                    Math.max(...state.estudiantes.map(e => e.id)) + 1 : 1;
+                
+                state.estudiantes.push({
+                    id: newId,
+                    nombre,
+                    telefono
+                });
+
+                // Inicializar seminarios para el nuevo estudiante
+                state.seminarios[newId] = {};
+                SEMINARIOS.forEach(seminario => {
+                    state.seminarios[newId][seminario] = null;
+                });
+            }
+
+            saveData();
+            hideStudentForm();
+            renderEstudiantes();
+            renderSeminarios();
+            renderStrikes();
+            showNotification(editingId ? 'Estudiante actualizado' : 'Estudiante añadido');
+        }
+
+        function editStudent(id) {
+            const estudiante = state.estudiantes.find(e => e.id === id);
+            if (estudiante) {
+                showStudentForm(estudiante);
+            }
+        }
+
+        function deleteStudent(id) {
+            if (confirm('¿Está seguro de que desea eliminar este estudiante? Se perderán todos sus datos.')) {
+                state.estudiantes = state.estudiantes.filter(e => e.id !== id);
+                delete state.seminarios[id];
+                state.strikes = state.strikes.filter(s => s.estudianteId !== id);
+                
+                saveData();
+                renderEstudiantes();
+                renderSeminarios();
+                renderStrikes();
+                showNotification('Estudiante eliminado');
+            }
+        }
+
+        // ===== GESTIÓN DE SEMINARIOS =====
+        function updateSeminarioGrade(estudianteId, seminario, grade) {
+            if (!state.seminarios[estudianteId]) {
+                state.seminarios[estudianteId] = {};
+            }
+            
+            state.seminarios[estudianteId][seminario] = grade === '' ? null : grade;
+            saveData();
+            
+            // Actualizar visualización
+            const select = event.target;
+            select.className = `form-control grade-${grade || 'null'}`;
+            
+            renderDashboard();
+        }
+
+        // ===== GESTIÓN DE STRIKES =====
+        function showStrikeForm() {
+            document.getElementById('strike-form').style.display = 'block';
+        }
+
+        function hideStrikeForm() {
+            document.getElementById('strike-form').style.display = 'none';
+            document.getElementById('strikeForm').reset();
+        }
+
+        function saveStrike(event) {
+            event.preventDefault();
+            
+            const estudianteId = parseInt(document.getElementById('strikeStudent').value);
+            const tipo = document.getElementById('strikeType').value;
+            const valor = document.getElementById('strikeValue').value;
+            const descripcion = document.getElementById('strikeDescription').value.trim();
+
+            if (!estudianteId || !tipo || !valor || !descripcion) {
+                showNotification('Por favor complete todos los campos', 'error');
+                return;
+            }
+
+            state.strikes.push({
+                id: state.strikes.length + 1,
+                estudianteId,
+                tipo,
+                valor: parseFloat(valor),
+                descripcion,
+                fecha: new Date().toISOString()
+            });
+
+            saveData();
+            hideStrikeForm();
+            renderStrikes();
+            renderDashboard();
+            renderEvaluacionIntegral();
+            showNotification('Strike registrado correctamente');
+        }
+
+        function deleteStrike(index) {
+            if (confirm('¿Está seguro de que desea eliminar este strike?')) {
+                state.strikes.splice(index, 1);
+                saveData();
+                renderStrikes();
+                renderDashboard();
+                renderEvaluacionIntegral();
+                showNotification('Strike eliminado');
+            }
+        }
+
+        // ===== GESTIÓN DE GUARDIAS =====
+        function toggleAsistencia(fecha, estudianteId) {
+            if (!state.calendarioGuardias[fecha]) {
+                state.calendarioGuardias[fecha] = { presente: {} };
+            }
+            
+            const currentlyPresent = state.calendarioGuardias[fecha].presente[estudianteId];
+            state.calendarioGuardias[fecha].presente[estudianteId] = !currentlyPresent;
+            
+            // Si marca ausente, generar strike automático
+            if (currentlyPresent) {
+                state.strikes.push({
+                    id: state.strikes.length + 1,
+                    estudianteId,
+                    tipo: 'negative',
+                    valor: 0.5,
+                    descripcion: 'Falta a guardia médica',
+                    fecha: new Date().toISOString()
+                });
+                showNotification('Strike generado por falta a guardia', 'warning');
+            }
+            
+            saveData();
+            renderCalendarioGuardias();
+            renderStrikes();
+            renderEvaluacionIntegral();
+        }
+
+        function manageTeams() {
+            // Implementación básica de gestión de equipos
+            const nombres = prompt('Ingrese nombres de equipos separados por coma (Ej: Equipo A, Equipo B, Equipo C):');
+            if (nombres) {
+                const equipoNombres = nombres.split(',').map(n => n.trim()).filter(n => n);
+                state.equiposGuardia = equipoNombres.map((nombre, index) => ({
+                    id: index + 1,
+                    nombre,
+                    estudiantes: []
+                }));
+                
+                // Distribuir estudiantes entre equipos
+                state.estudiantes.forEach((estudiante, index) => {
+                    const equipoIndex = index % state.equiposGuardia.length;
+                    state.equiposGuardia[equipoIndex].estudiantes.push(estudiante.id);
+                });
+                
+                saveData();
+                initializeCalendarioGuardias();
+                renderCalendarioGuardias();
+                showNotification('Equipos actualizados');
+            }
+        }
+
+        // ===== NOTIFICACIONES WHATSAPP =====
+        function notificarEstudiante(estudianteId) {
+            const estudiante = state.estudiantes.find(e => e.id === estudianteId);
+            if (!estudiante) return;
+
+            const promedio = calcularPromedioFinal(estudianteId);
+            const strikesNetos = calcularStrikesNetos(estudianteId);
+            const strikesPositivos = state.strikes.filter(s => s.estudianteId === estudianteId && s.tipo === 'positive');
+            const strikesNegativos = state.strikes.filter(s => s.estudianteId === estudianteId && s.tipo === 'negative');
+
+            let mensaje = `*Resumen Académico - ${estudiante.nombre}*\n\n`;
+            mensaje += `📊 *Promedio Actual:* ${promedio.toFixed(1)}\n`;
+            mensaje += `⚖️ *Strikes Netos:* ${strikesNetos > 0 ? '+' : ''}${strikesNetos.toFixed(1)}\n\n`;
+
+            if (strikesPositivos.length > 0) {
+                mensaje += `✅ *Strikes Positivos:*\n`;
+                strikesPositivos.forEach(strike => {
+                    mensaje += `   • +${strike.valor}: ${strike.descripcion}\n`;
+                });
+                mensaje += `\n`;
+            }
+
+            if (strikesNegativos.length > 0) {
+                mensaje += `❌ *Strikes Negativos:*\n`;
+                strikesNegativos.forEach(strike => {
+                    mensaje += `   • -${strike.valor}: ${strike.descripcion}\n`;
+                });
+                mensaje += `\n`;
+            }
+
+            mensaje += `_Enviado desde INTERNOS HPJRM_`;
+
+            const url = `https://wa.me/53${estudiante.telefono}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+
+        function notificarEvaluacion(estudianteId) {
+            notificarEstudiante(estudianteId);
+        }
+
+        // ===== CONFIGURACIÓN =====
+        function updateDates(event) {
+            event.preventDefault();
+            const startDate = document.getElementById('startDate').value;
+            const duration = parseInt(document.getElementById('duration').value);
+
+            if (startDate && duration > 0) {
+                state.config.inicioRotacion = startDate;
+                state.config.duracionSemanas = duration;
+                saveData();
+                initializeCalendarioGuardias();
+                showNotification('Fechas actualizadas correctamente');
+            }
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(state, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `internos-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        document.getElementById('importFile').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedState = JSON.parse(e.target.result);
+                        state = { ...state, ...importedState };
+                        saveData();
+                        location.reload(); // Recargar para aplicar cambios
+                    } catch (error) {
+                        showNotification('Error al importar datos', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function clearData() {
+            if (confirm('¿ESTÁ SEGURO? Esto eliminará TODOS los datos y restaurará los valores por defecto.')) {
+                localStorage.removeItem('internosApp');
+                location.reload();
+            }
+        }
+
+        // ===== NAVEGACIÓN Y UI =====
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        function showSection(sectionId) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Mostrar sección seleccionada
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Actualizar menu activo
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Cerrar menú en móviles
+            if (window.innerWidth <= 768) {
+                toggleMenu();
+            }
+            
+            // Renderizar sección específica
+            switch(sectionId) {
+                case 'dashboard':
+                    renderDashboard();
+                    break;
+                case 'estudiantes':
+                    renderEstudiantes();
+                    break;
+                case 'seminarios':
+                    renderSeminarios();
+                    break;
+                case 'strikes':
+                    renderStrikes();
+                    break;
+                case 'guardias':
+                    renderCalendarioGuardias();
+                    break;
+                case 'evaluacion':
+                    renderEvaluacionIntegral();
+                    break;
+                case 'rotaciones':
+                    renderRotaciones();
+                    break;
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function setupEventListeners() {
+            // Cerrar menú al hacer clic fuera
+            document.addEventListener('click', (event) => {
+                const sidebar = document.getElementById('sidebar');
+                const menuToggle = document.querySelector('.menu-toggle');
+                
+                if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            // Configuración inicial de fechas
+            document.getElementById('startDate').value = state.config.inicioRotacion;
+            document.getElementById('duration').value = state.config.duracionSemanas;
+        }
+
+        // ===== INICIALIZACIÓN AL CARGAR =====
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
